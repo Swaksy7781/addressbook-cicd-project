@@ -1,0 +1,6 @@
+aws_region = "eu-north-1"
+vpc_id = "vpc-0f18b892cda472229"
+ami_id = "ami-0a716d3f3b16d290c"
+instance_type_1 = "t3.medium"
+instance_type_2 = "t3.micro"
+key_name = "saurabh-wakase-exam"
