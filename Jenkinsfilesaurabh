@@ -1,15 +1,15 @@
 pipeline {
     agent any
     tools {
-        // Ensure that the tool name 'Maven' matches the name configured in Jenkins
+       
         maven 'Maven'
     }
     triggers {
-        // This trigger listens for push events from GitHub
+        
         githubPush()
     }
     environment {
-        // It's a good practice to use an environment variable for the IP
+        
         APP_NODE_IP = "13.53.149.249"
     }
     stages {
@@ -62,4 +62,5 @@ pipeline {
     }
 }
 
-//updating file
+//updating file again
+
