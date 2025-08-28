@@ -46,7 +46,7 @@ pipeline {
                 echo "Starting Ansible playbook for Tomcat installation..."
                 
                 sshagent(credentials: ['saurabh-wakase']) {
-                    sh 'ansible-playbook -i ansible/inventory.ini ansible/webservers.yml'
+                    sh 'ansible-playbook -i ansible/inventory.ini ansible/appserver.yml'
                 }
             }
         }
