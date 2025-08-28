@@ -1,33 +1,23 @@
 ---
-- name: Configure app server
-  hosts: app_servers
+- name: Install and configure Tomcat
+  hosts: webservers
   become: yes
-
   tasks:
-    - name: Update apt cache and upgrade packages
-      apt:
-        update_cache: yes
-        upgrade: dist
-
-    - name: install Java
-      apt:
-        name: openjdk-17-jdk
+    - name: Install Java
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
         state: present
-
-    - name: install tomcat
-      apt:
-        name: tomcat9
-        state: present
-      notify:
-        - Start Tomcat9
-
-  handlers:
-    - name: Start Tomcat
-      service:
-        name: tomcat9
-        state: started
-        enabloed: yes
-
-
-
     
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: https://downloads.apache.org/tomcat/tomcat-9/v9.0.83/bin/apache-tomcat-9.0.83.tar.gz
+        dest: /opt/apache-tomcat-9.0.83.tar.gz
+
+    - name: Extract Tomcat
+      ansible.builtin.unarchive:
+        src: /opt/apache-tomcat-9.0.83.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Start Tomcat service
+      ansible.builtin.shell: /opt/apache-tomcat-9.0.83/bin/startup.sh
