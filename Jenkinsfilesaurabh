@@ -1,49 +1,60 @@
 pipeline {
     agent any
     tools {
+        // Ensure that the tool name 'Maven' matches the name configured in Jenkins
         maven 'Maven'
     }
     triggers {
+        // This trigger listens for push events from GitHub
         githubPush()
     }
     environment {
+        // It's a good practice to use an environment variable for the IP
         APP_NODE_IP = "13.53.149.249"
     }
-
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out github repo code"
-                git_branch: 'master', url: 'https://github.com/Swaksy7781/addressbook-cicd-project.git'
+                echo "Checking out the GitHub repository code..."
+                
+                git url: 'https://github.com/Swaksy7781/addressbook-cicd-project.git', branch: 'master'
             }
         }
-        stage('Clean') {
+        stage('Clean and Build') {
             steps {
+                echo "Cleaning and building the Maven project..."
+                
                 sh "mvn clean"
             }
         }
         stage('Test') {
             steps {
+                echo "Running unit tests..."
+                
                 sh "mvn test"
             }
         }
         stage('Package') {
             steps {
+                echo "Packaging the application into a WAR file..."
+                
                 sh "mvn package"
             }
         }
-        stage('Tomcat_installation') {
+        stage('Tomcat Installation') {
             steps {
-                sshagent(Credentials: ['saurabh-wakase']) {
-                    echo "starting installation of tomcat"
+                echo "Starting Ansible playbook for Tomcat installation..."
+                
+                sshagent(credentials: ['saurabh-wakase']) {
                     sh 'ansible-playbook -i ansible/inventory.ini ansible/webservers.yml'
                 }
             }
         }
-        stage('Tomcat_installation') {
+        stage('Deploy Application') {
             steps {
-                sshagent(Credentials: ['saurabh-wakase']) {
-                    echo "deployming the war file to webserver..."
+                echo "Deploying the WAR file to the webserver..."
+                
+                sshagent(credentials: ['saurabh-wakase']) {
                     sh 'ansible-playbook -i ansible/inventory.ini ansible/deployment.yml'
                 }
             }
