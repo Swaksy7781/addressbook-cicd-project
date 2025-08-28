@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven'
+    }
+    triggers {
+        githubPush()
+    }
+    environment {
+        APP_NODE_IP = "13.53.149.249"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out github repo code"
+                git_branch: 'master', url: 'https://github.com/Swaksy7781/addressbook-cicd-project.git'
+            }
+        }
+        stage('Clean') {
+            steps {
+                sh "mvn clean"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh "mvn test"
+            }
+        }
+        stage('Package') {
+            steps {
+                sh "mvn package"
+            }
+        }
+        stage('Tomcat_installation') {
+            steps {
+                sshagent(Credentials: ['saurabh-wakase']) {
+                    echo "starting installation of tomcat"
+                    sh 'ansible-playbook -i ansible/inventory.ini ansible/webservers.yml'
+                }
+            }
+        }
+        stage('Tomcat_installation') {
+            steps {
+                sshagent(Credentials: ['saurabh-wakase']) {
+                    echo "deployming the war file to webserver..."
+                    sh 'ansible-playbook -i ansible/inventory.ini ansible/deployment.yml'
+                }
+            }
+        }
+    }
+}
