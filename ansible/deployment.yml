@@ -1,6 +1,6 @@
 ---
 - name: Deployment of WAR file
-  hotsts: app_servers
+  hosts: app_servers
   become: yes
 
   tasks:
